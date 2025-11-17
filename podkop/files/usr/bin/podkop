@@ -1238,6 +1238,12 @@ import_community_service_subnet_list_handler() {
         nft add rule inet "$NFT_TABLE_NAME" mangle iifname "@$NFT_INTERFACE_SET_NAME" ip daddr \
             "@$NFT_DISCORD_SET_NAME" udp dport '{ 50000-65535 }' meta mark set 0x105 counter
         ;;
+    "google_echo")
+        URL=$SUBNETS_GOOGLE
+        nft_create_ipv4_set "$NFT_TABLE_NAME" "$NFT_GOOGLE_SET_NAME"
+        nft add rule inet "$NFT_TABLE_NAME" mangle iifname "@$NFT_INTERFACE_SET_NAME" ip daddr \
+            "@$NFT_GOOGLE_SET_NAME" udp dport '{ 7 }' meta mark set 0x105 counter
+        ;;
     *) return 0 ;;
     esac
 
