@@ -1242,7 +1242,7 @@ import_community_service_subnet_list_handler() {
         URL=$SUBNETS_GOOGLE
         nft_create_ipv4_set "$NFT_TABLE_NAME" "$NFT_GOOGLE_SET_NAME"
         nft add rule inet "$NFT_TABLE_NAME" mangle iifname "@$NFT_INTERFACE_SET_NAME" ip daddr \
-            "@$NFT_GOOGLE_SET_NAME" udp dport '{ 7 }' meta mark set 0x105 counter
+            "@$NFT_GOOGLE_SET_NAME" tcp dport '{ 7 }' meta mark set 0x105 counter
         ;;
     *) return 0 ;;
     esac
@@ -1260,6 +1260,8 @@ import_community_service_subnet_list_handler() {
 
     if [ "$service" = "discord" ]; then
         nft_add_set_elements_from_file_chunked "$tmpfile" "$NFT_TABLE_NAME" "$NFT_DISCORD_SET_NAME"
+    elif [ "$service" = "google_echo" ]; then
+        nft_add_set_elements_from_file_chunked "$tmpfile" "$NFT_TABLE_NAME" "$NFT_GOOGLE_SET_NAME"
     else
         nft_add_set_elements_from_file_chunked "$tmpfile" "$NFT_TABLE_NAME" "$NFT_COMMON_SET_NAME"
     fi
