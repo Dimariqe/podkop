@@ -906,6 +906,7 @@ exclude_source_ip_from_routing_handler() {
     local source_ip="$1"
     local rule_tag="$2"
 
+    nft_exclude_source_ip_from_routing "$source_ip"
     config=$(sing_box_cm_patch_route_rule "$config" "$rule_tag" "source_ip_cidr" "$source_ip")
 }
 
@@ -1626,6 +1627,14 @@ nft_list_all_traffic_from_ip() {
         nft insert rule inet "$NFT_TABLE_NAME" mangle iifname "@$NFT_INTERFACE_SET_NAME" ip saddr "$ip" \
             meta l4proto udp meta mark set "$NFT_FAKEIP_MARK" counter
         nft insert rule inet "$NFT_TABLE_NAME" mangle ip saddr "$ip" ip daddr @localv4 return
+    fi
+}
+
+nft_exclude_source_ip_from_routing() {
+    local ip="$1"
+
+    if ! nft list chain inet "$NFT_TABLE_NAME" mangle | grep -q "ip saddr $ip return"; then
+        nft insert rule inet "$NFT_TABLE_NAME" mangle iifname "@$NFT_INTERFACE_SET_NAME" ip saddr "$ip" return
     fi
 }
 
